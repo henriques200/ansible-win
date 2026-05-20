@@ -1,6 +1,6 @@
 ---
 - name: Check ArcGIS Services
-  hosts: bupi_nprd
+  hosts: 
   gather_facts: true
   tasks:
     - name: Check ArcGIS Server Service Status

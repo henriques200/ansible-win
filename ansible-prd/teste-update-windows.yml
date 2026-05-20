@@ -1,6 +1,6 @@
 ---
 - name: Windows update playbook
-  hosts: bupi_prd
+  hosts: 
   gather_facts: false
   tasks:
     - name: Check for available updates

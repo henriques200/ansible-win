@@ -1,8 +1,7 @@
 ---
 - name: Windows update playbook
-  hosts: bupi_nprd
+  hosts: 
   strategy: free
-  serial: 10
   gather_facts: false
   tasks:
     - name: Check for available updates

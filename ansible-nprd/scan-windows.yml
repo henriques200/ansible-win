@@ -1,6 +1,6 @@
 ---
 - name: Run Windows Defender Quick Scan
-  hosts: bupi_nprd
+  hosts: 
   strategy: free
   gather_facts: false
   tasks:

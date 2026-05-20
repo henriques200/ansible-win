@@ -1,6 +1,6 @@
 ---
 - name: Playbook para reiniciar os servidores de PRD
-  hosts: bupi_prd
+  hosts: 
   gather_facts: false
   tasks:
     - name: Reiniciar DC1 para aplicar updates

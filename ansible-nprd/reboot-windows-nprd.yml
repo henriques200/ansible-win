@@ -1,6 +1,6 @@
 ---
 - name: Reniciar VMs para aplicar updates
-  hosts: bupi_nprd
+  hosts: 
   gather_facts: false
   tasks:
     - name: Reiniciar as VMs excepto o ArcGIS Server 2
