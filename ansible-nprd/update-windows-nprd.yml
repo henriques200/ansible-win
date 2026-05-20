@@ -1,0 +1,24 @@
+---
+- name: Windows update playbook
+  hosts: bupi_nprd
+  strategy: free
+  serial: 10
+  gather_facts: false
+  tasks:
+    - name: Check for available updates
+      ansible.windows.win_updates:
+        category_names: '*'
+        state: searched
+        server_selection: windows_update
+    - name: Apply pending updates
+      ansible.windows.win_updates:
+        category_names: '*'
+        state: installed
+        server_selection: windows_update
+        reboot: yes
+        reboot_timeout: 1800
+      register: apply_result
+      retries: 1
+      delay: 60
+      until: apply_result is succeeded
+      ignore_errors: yes

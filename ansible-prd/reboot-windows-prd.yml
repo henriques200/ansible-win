@@ -1,0 +1,47 @@
+---
+- name: Playbook para reiniciar os servidores de PRD
+  hosts: bupi_prd
+  gather_facts: false
+  tasks:
+    - name: Reiniciar DC1 para aplicar updates
+      ansible.windows.win_reboot:
+         reboot_timeout: 3600
+      when: "'DC1' in inventory_hostname"
+    - name: Reiniciar VMs para aplicar updates
+      ansible.windows.win_reboot:
+         reboot_timeout: 3600
+      when: "'DC1' not in inventory_hostname"
+    - name: Verificar estado do servico ArcGIS
+      ansible.windows.win_service_info:
+        name: ArcGIS Server
+      register: arcgis_server_info
+      when: "'ArcGISServer1_PRD' in inventory_hostname"
+    - name: Mostrar o estado do ArcGIS Server
+      debug:
+        msg: "The Service {{ arcgis_server_info.services[0].display_name }} is - {{ arcgis_server_info.services[0].state }}"
+        #var: arcgis_server_info.services[0].state
+      when: "'ArcGISServer1_QUA' in inventory_hostname"
+    - name: Iniciar o ArcGIS Server se estiver desligado
+      ansible.windows.win_service:
+        name: ArcGIS Server
+        state: started
+      when:
+        - "'ArcGISServer1_PRD' in inventory_hostname"
+        -  arcgis_server_info.services[0].state != "started"
+    - name: Verificar estado do servico GeoPortal
+      ansible.windows.win_service_info:
+        name: Portal for ArcGIS
+      register: geoportal_info
+      when: "'Geo_Portal1_PRD' in inventory_hostname"
+    - name: Mostrar o estado do GeoPortal
+      debug:
+        msg: "The Service {{ geoportal_info.services[0].display_name }} is - {{ geoportal_info.services[0].state }}"
+        #var: arcgis_server_info.services[0].state
+      when: "'Geo_Portal1_PRD' in inventory_hostname"
+    - name: Iniciar o GeoPortal se estiver desligado
+      ansible.windows.win_service:
+        name: Portal for ArcGIS
+        state: started
+      when:
+        - "'Geo_Portal1_PRD' in inventory_hostname"
+        -  geoportal_info.services[0].state != "started"

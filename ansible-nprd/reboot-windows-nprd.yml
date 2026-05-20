@@ -1,0 +1,30 @@
+---
+- name: Reniciar VMs para aplicar updates
+  hosts: bupi_nprd
+  gather_facts: false
+  tasks:
+    - name: Reiniciar as VMs excepto o ArcGIS Server 2
+      ansible.windows.win_reboot:
+         reboot_timeout: 3600
+      when: "'ArcGISServer2_QUA' not in inventory_hostname"
+    - name: Reiniciar o ArcGIS Server 2
+      ansible.windows.win_reboot:
+         reboot_timeout: 3600
+      when: "'ArcGISServer2_QUA' in inventory_hostname"
+    - name: Verificar estado do servico ArcGIS no primeiro no
+      ansible.windows.win_service_info:
+        name: ArcGIS Server
+      register: arcgis_server_info
+      when: "'ArcGISServer1_QUA' in inventory_hostname"
+    - name: Show ArcGIS Server Status
+      debug:
+        msg: "The Service {{ arcgis_server_info.services[0].display_name }} is - {{ arcgis_server_info.services[0].state }}"
+        #var: arcgis_server_info.services[0].state
+      when: "'ArcGISServer1_QUA' in inventory_hostname"
+    - name: Ensure ArcGIS Server is started
+      ansible.windows.win_service:
+        name: ArcGIS Server
+        state: started
+      when:
+        - "'ArcGISServer1_QUA' in inventory_hostname"
+        -  arcgis_server_info.services[0].state != "started"

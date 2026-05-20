@@ -1,0 +1,26 @@
+---
+- name: Check ArcGIS Services
+  hosts: bupi_nprd
+  gather_facts: true
+  tasks:
+    - name: Check ArcGIS Server Service Status
+      ansible.windows.win_service_info:
+        name: ArcGIS Server
+      register: arcgis_server_info
+      when: "'ArcGISServer1_QUA' in inventory_hostname"
+    - name: Show ArcGIS Server Status
+      debug:
+        msg: "The Service {{ arcgis_server_info.services[0].display_name }} is - {{ arcgis_server_info.services[0].state }}"
+        #var: arcgis_server_info.services[0].state
+      when: "'ArcGISServer1_QUA' in inventory_hostname"
+    - name: Ensure ArcGIS Server is started
+      ansible.windows.win_service:
+        name: ArcGIS Server
+        state: started
+      when: 
+        - "'ArcGISServer1_QUA' in inventory_hostname"
+        -  arcgis_server_info.services[0].state != "started"
+    - name: Test
+      ansible.builtin.debug:
+        msg: "ansible_hostname: {{ ansible_facts['hostname'] }}"
+      when: "'ArcGISServer1_QUA' not in inventory_hostname"

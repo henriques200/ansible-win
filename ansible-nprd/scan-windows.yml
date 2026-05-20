@@ -1,0 +1,12 @@
+---
+- name: Run Windows Defender Quick Scan
+  hosts: bupi_nprd
+  strategy: free
+  gather_facts: false
+  tasks:
+    - name: Initiate quick scan
+      ansible.windows.win_shell: Start-MpScan -ScanType QuickScan
+      register: scan_result
+    - name: Display scan output
+      ansible.builtin.debug:
+        var: scan_result.stdout_lines
